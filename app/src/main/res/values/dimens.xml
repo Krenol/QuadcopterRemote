@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size">18sp</dimen>
+    <dimen name="drone_size_start">160dp</dimen>
+    <dimen name="seek_bar_thickness">8dp</dimen>
+    <dimen name="seek_bar_thumb_height">22dp</dimen>
+    <dimen name="seek_bar_thumb_width">10dp</dimen>
+
+</resources>

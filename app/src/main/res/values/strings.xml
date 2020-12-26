@@ -1,0 +1,10 @@
+<!DOCTYPE resources [
+    <!ENTITY appname "Quadcopter Remote">
+    <!ENTITY author "LYG">
+    ]>
+<resources>
+    <string name="app_name">&appname;</string>
+    <string name="welcome">Welcome to &appname;!</string>
+    <string name="start">Start</string>
+    <string name="content_start_pic">Drone drawing</string>
+</resources>

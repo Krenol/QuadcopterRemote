@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable name="viewModel" type="com.krenol.rpi.quadcopterremote.ui.main.StartPageViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/start_page_fragment"
+        tools:context=".ui.main.StartPage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="@dimen/drone_size_start"
+            android:layout_height="@dimen/drone_size_start"
+            android:src="@drawable/quadcopter_frame"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/content_start_pic" />
+
+        <Button
+            android:id="@+id/start_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start"
+            android:onClick="@{() -> viewModel.start()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome"
+            android:textSize="@dimen/text_size"
+            app:layout_constraintBottom_toTopOf="@+id/imageView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
