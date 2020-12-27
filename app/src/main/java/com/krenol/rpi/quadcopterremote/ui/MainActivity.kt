@@ -1,8 +1,9 @@
-package com.krenol.rpi.quadcopterremote
+package com.krenol.rpi.quadcopterremote.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.krenol.rpi.quadcopterremote.R
 
 
 class MainActivity : AppCompatActivity() {

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navGraphViewModels
+import androidx.preference.PreferenceManager
 import com.krenol.rpi.quadcopterremote.R
 import com.krenol.rpi.quadcopterremote.databinding.LoadingFragmentBinding
 
@@ -42,6 +43,14 @@ class Loading : Fragment() {
             if(cancel) cancel()
         })
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val hostname: String = prefs.getString("hostname", "raspberrypi").toString()
+        val port: Int = prefs.getString("port", "8889").toString().toInt()
+        viewModel.connect(hostname, port)
     }
 
     private fun cancel(){

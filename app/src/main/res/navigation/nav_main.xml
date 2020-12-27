@@ -36,7 +36,7 @@
     </navigation>
     <activity
         android:id="@+id/settingsActivity"
-        android:name="com.krenol.rpi.quadcopterremote.SettingsActivity"
+        android:name="com.krenol.rpi.quadcopterremote.ui.SettingsActivity"
         android:label="SettingsActivity" />
 
 </navigation>

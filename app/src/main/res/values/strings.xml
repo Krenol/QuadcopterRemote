@@ -24,7 +24,7 @@
 
     <!-- Hostname Preference -->
     <string name="hostname_title">Enter RPi Hostname</string>
-    <string name="default_hostname">rpidrone</string>
+    <string name="default_hostname">raspberrypi</string>
 
     <!-- IP Preference -->
     <string name="ip_title">Enter RPi IP</string>

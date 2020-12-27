@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.main.Cockpit">
 
+
         <fragment
             android:id="@+id/fragment"
             android:name="com.krenol.rpi.quadcopterremote.ui.main.Loading"

@@ -15,7 +15,7 @@
             android:defaultValue="@string/default_port"
             android:key="port"
             android:selectAllOnFocus="true"
-            android:inputType="number"
+            android:digits="0123456789"
             android:singleLine="true"
             app:useSimpleSummaryProvider="true"
             android:title="@string/port_title" />
@@ -33,7 +33,6 @@
             android:key="ip"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:inputType="number"
             android:digits="0123456789."
             app:useSimpleSummaryProvider="true"
             android:title="@string/ip_title" />

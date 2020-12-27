@@ -1,10 +1,10 @@
-package com.krenol.rpi.quadcopterremote
+package com.krenol.rpi.quadcopterremote.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
+import com.krenol.rpi.quadcopterremote.R
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -23,6 +23,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
