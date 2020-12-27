@@ -3,13 +3,12 @@ package com.krenol.rpi.quadcopterremote.ui.main
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navGraphViewModels
+import androidx.preference.PreferenceManager
 import com.krenol.rpi.quadcopterremote.R
 import com.krenol.rpi.quadcopterremote.databinding.CockpitFragmentBinding
 
@@ -26,6 +25,8 @@ class Cockpit : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
+
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.cockpit_fragment,
@@ -40,8 +41,35 @@ class Cockpit : Fragment() {
         // Specify the fragment view as the lifecycle owner of the binding.
         // This is used so that the binding can observe LiveData updates
         binding.lifecycleOwner = viewLifecycleOwner
-
+        viewModel.cancelBtnClick.observe(viewLifecycleOwner, { cancel ->
+            if(cancel) cancel()
+        })
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.cockpit_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.cockpit_menu_disconnect){
+            viewModel.cancelConnection()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val hostname: String = prefs.getString("hostname", "raspberrypi").toString()
+        val port: Int = prefs.getString("port", "8889").toString().toInt()
+        viewModel.connect(hostname, port)
+    }
+
+    private fun cancel(){
+        val action = CockpitDirections.actionCockpitToStartPage()
+        NavHostFragment.findNavController(this).navigate(action)
+    }
 }

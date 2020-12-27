@@ -15,27 +15,30 @@ import java.util.concurrent.atomic.AtomicBoolean
 class CockpitViewModel : ViewModel() {
     private var mSocket: Socket = Socket()
     private var tryConnect = AtomicBoolean(false)
+    var connected = mSocket.connected
 
     private var _cancelBtnClick = MutableLiveData(false)
     val cancelBtnClick: LiveData<Boolean>
         get() = _cancelBtnClick
 
     private var _connected = MutableLiveData(View.VISIBLE)
-    val connected: LiveData<Int>
+    val showLoadingScreen: LiveData<Int>
         get() = _connected
 
-    fun cancelConnection() {
+
+    fun disconnect() {
         tryConnect.set(false)
         mSocket.disconnect()
+    }
+
+    fun cancelConnection() {
+        disconnect()
         _connected.value = View.VISIBLE
         _cancelBtnClick.value = true
     }
 
     fun connect(hostname: String, port: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            if(mSocket.connected) {
-                mSocket.disconnect()
-            }
             tryConnect.set(true)
             while(tryConnect.get() && !mSocket.connected){
                 mSocket.connect(hostname, port)
@@ -45,5 +48,4 @@ class CockpitViewModel : ViewModel() {
             tryConnect.set(false)
         }
     }
-
 }

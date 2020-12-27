@@ -13,15 +13,12 @@
         android:layout_height="match_parent"
         tools:context=".ui.main.Cockpit">
 
+        <include layout="@layout/loading_view"
+            android:visibility="@{viewModel.showLoadingScreen}"
+            android:id="@+id/loading_fragment"
+            app:viewModel="@{viewModel}"/>
 
-        <fragment
-            android:id="@+id/fragment"
-            android:name="com.krenol.rpi.quadcopterremote.ui.main.Loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
