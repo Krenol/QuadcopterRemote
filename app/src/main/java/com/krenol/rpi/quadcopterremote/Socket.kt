@@ -9,28 +9,45 @@ class Socket {
     var socket = java.net.Socket()
         private set
 
-    val connected = socket.isConnected && !socket.isClosed
+    fun isConnected() : Boolean {
+        return socket.isConnected && !socket.isClosed
+    }
 
 
-
-    fun connect(hostname: String, port: Int) : Boolean {
-        if(connected) {
+    fun connectToHost(hostname: String, port: Int) : Boolean {
+        if(isConnected()) {
             disconnect()
         }
 
         try {
             val address = InetAddress.getByName(hostname)
+            socket = java.net.Socket(hostname, port)
+
+        }
+        catch (e: Exception) {
+            Log.e(TAG, e.toString())
+        }
+        return isConnected()
+    }
+
+    fun connectToIp(ip: String, port: Int) : Boolean {
+        if(isConnected()) {
+            disconnect()
+        }
+
+        try {
+            val address = InetAddress.getByName(ip)
             socket = java.net.Socket(address, port)
 
         }
         catch (e: Exception) {
             Log.e(TAG, e.toString())
         }
-        return connected
+        return isConnected()
     }
 
     fun disconnect() {
-        if(!connected) return
+        if(!isConnected()) return
         socket.close()
     }
 }

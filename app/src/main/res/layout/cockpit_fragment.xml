@@ -20,6 +20,7 @@
 
         <include layout="@layout/cockpit_content"
             android:id="@+id/cockpit"
+            android:visibility="@{viewModel.showCockpitScreen}"
             app:viewModel="@{viewModel}"/>
 
 

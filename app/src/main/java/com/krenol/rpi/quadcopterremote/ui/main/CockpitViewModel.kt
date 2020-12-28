@@ -7,7 +7,6 @@ import android.widget.SeekBar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.krenol.rpi.quadcopterremote.Socket
 import com.krenol.rpi.quadcopterremote.listeners.JoystickListener
@@ -18,6 +17,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import com.krenol.rpi.quadcopterremote.DataClasses
+import com.krenol.rpi.quadcopterremote.Prefs
 
 
 class CockpitViewModel : ViewModel() {
@@ -27,19 +28,14 @@ class CockpitViewModel : ViewModel() {
     private var mReadData = AtomicBoolean(false)
     private val mGson = Gson()
     private val mStpe = Executors.newSingleThreadExecutor()
-    val mPrefs = PreferenceManager.getDefaultSharedPreferences(null)
-    val mHostname: String = mPrefs.getString("hostname", "raspberrypi").toString()
-    val mPort: Int = mPrefs.getString("port", "8889").toString().toInt()
-    val mIp: String = mPrefs.getString("ip", "192.168.1.1").toString()
-    val mDelim: String = mPrefs.getString("delimiter", "\r\n").toString()
-    val mBytes: Int = mPrefs.getString("bytes", "1024").toString().toInt()
-
-    var connected = mSocket.connected
+    lateinit var prefs: Prefs
 
     var cancelBtnClick = MutableLiveData(false)
         private set
 
     var showLoadingScreen = MutableLiveData(View.VISIBLE)
+        private set
+    var showCockpitScreen = MutableLiveData(View.GONE)
         private set
 
     var altitude = MutableLiveData(0.0)
@@ -72,6 +68,7 @@ class CockpitViewModel : ViewModel() {
 
     fun disconnect() {
         mTryConnect.set(false)
+        mReadData.set(false)
         mStpe.shutdownNow()
         mSocket.disconnect()
     }
@@ -82,19 +79,20 @@ class CockpitViewModel : ViewModel() {
     }
 
     private fun send(msg: String) {
-        if(connected){
+        if(mSocket.isConnected()){
             try {
-                mSocket.socket.getOutputStream().write((msg + mDelim).toByteArray())
+                mSocket.socket.getOutputStream().write((msg + prefs.delimiter).toByteArray())
             } catch (e: Exception) {
-                Log.e(TAG, e.toString())
+                Log.e("$TAG-send", e.toString())
+                mSocket.disconnect()
                 this.connect()
             }
         }
     }
 
     fun createEnqueueMessage() {
-        val out = Output(
-            throttleProgress.value, Joystick(
+        val out = DataClasses.Output(
+            throttleProgress.value, DataClasses.Joystick(
                 joystickOffset.value,
                 joystickDegrees.value,
                 yawn.value
@@ -108,49 +106,61 @@ class CockpitViewModel : ViewModel() {
         if(mTryConnect.get()) return
         mReadData.set(false)
         showLoadingScreen.postValue(View.VISIBLE)
+        showCockpitScreen.postValue(View.GONE)
         viewModelScope.launch(Dispatchers.IO) {
             mTryConnect.set(true)
-            /*while(mTryConnect.get() && !mSocket.connected){
-                mSocket.connect(hostname, port)
-                delay(200)
+
+            while(mTryConnect.get() && !mSocket.isConnected()){
+                if(prefs.useHostname){
+                    Log.i(TAG, "Connect via hostname")
+                    mSocket.connectToHost(prefs.hostname, prefs.port)
+                } else {
+                    Log.i(TAG, "Connect via IP")
+                    mSocket.connectToIp(prefs.ip, prefs.port)
+                }
+                delay(500)
             }
-            if(connected && !mTryConnect.get()) showLoadingScreen.postValue(View.GONE)*/
-            showLoadingScreen.postValue(View.GONE)
+            if(mSocket.isConnected() && mTryConnect.get()) {
+                Log.i(TAG, "connected successfully to RPi")
+                showLoadingScreen.postValue(View.GONE)
+                showCockpitScreen.postValue(View.VISIBLE)
+                mReadData.set(true)
+                read()
+            }
             mTryConnect.set(false)
-            delay(2000)
-            attitude.postValue(AttitudeIndicator.Attitude(10.0F, 5.0F))
-            altitude.postValue(200.0)
-            mReadData.set(true)
         }
     }
 
-    fun read(){
+    val x = '\r'
+    val y = '\n'
+    val d = x.toString() + y.toString()
+    private fun parseAndSet(buf: String){
+        if(buf.contains(d)){
+            val msg = buf
+            msg.substringBefore(d)
+            buf.substringAfter(d)
+            val json = mGson.fromJson(msg, DataClasses.Input::class.java)
+            altitude.postValue(json.sensors.barometric_height)
+            attitude.postValue(AttitudeIndicator.Attitude(json.angles.pitch, json.angles.roll))
+        }
+    }
+
+    private fun read(){
         viewModelScope.launch(Dispatchers.IO) {
             val stream = mSocket.socket.getInputStream()
-            val buffer = ByteArray(mBytes)
-            var buf: String
-            while(mReadData.get() && connected){
-                stream.read(buffer)
-                buf = buffer.toString()
-
+            val buffer = ByteArray(prefs.bytes)
+            var buf = ""
+            while(mReadData.get() && mSocket.isConnected()){
+                try{
+                    stream.read(buffer)
+                    buf += String(buffer)
+                    parseAndSet(buf)
+                } catch(e: Exception) {
+                    Log.e("$TAG-read", e.toString())
+                }
+                delay(50)
             }
 
         }
-    }
-
-
-
-    data class Joystick(
-        var offset: Float?,
-        var degrees: Float?,
-        var rotation: Int?
-    ) {
-
-    }
-
-    data class Output(
-        var throttle: Int?,
-        var joystick: Joystick
-    ) {
     }
 }

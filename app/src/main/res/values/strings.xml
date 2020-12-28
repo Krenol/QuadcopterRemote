@@ -44,7 +44,7 @@
 
     <!-- Byte Preference -->
     <string name="bytes_title">Bytes read per message</string>
-    <string name="default_bytes">1024</string>
+    <string name="default_bytes">512</string>
 
     <!-- Delimiter Preference -->
     <string name="delimiter_title">Message delimiter</string>
