@@ -2,7 +2,7 @@ package com.krenol.rpi.quadcopterremote.ui.main
 
 
 import android.view.View
-import androidx.lifecycle.LiveData
+import android.widget.SeekBar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,27 +13,35 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
+
 class CockpitViewModel : ViewModel() {
     private var mSocket: Socket = Socket()
     private var tryConnect = AtomicBoolean(false)
     var connected = mSocket.connected
 
-    private var _cancelBtnClick = MutableLiveData(false)
-    val cancelBtnClick: LiveData<Boolean>
-        get() = _cancelBtnClick
+    var cancelBtnClick = MutableLiveData(false)
+        private set
 
-    private var _connected = MutableLiveData(View.VISIBLE)
-    val showLoadingScreen: LiveData<Int>
-        get() = _connected
+    var showLoadingScreen = MutableLiveData(View.VISIBLE)
+        private set
 
-    private var _altitude = MutableLiveData(0.0)
-    val altitude: LiveData<Double>
-        get() = _altitude
+    var altitude = MutableLiveData(0.0)
+        private set
 
-    private var _attitude = MutableLiveData(AttitudeIndicator.Attitude(0.0F, 0.0F))
-    val attitude: LiveData<AttitudeIndicator.Attitude>
-        get() = _attitude
+    var attitude = MutableLiveData(AttitudeIndicator.Attitude(0.0F, 0.0F))
+        private set
 
+    var progress = MutableLiveData(0)
+        private set
+
+    var progressString = MutableLiveData("0")
+        private set
+
+
+    fun onThrottleChange(seekBar: SeekBar?, progressValue: Int, fromUser: Boolean) {
+        progress.value = progressValue
+        progressString.value = progressValue.toString()
+    }
 
     fun disconnect() {
         tryConnect.set(false)
@@ -42,8 +50,8 @@ class CockpitViewModel : ViewModel() {
 
     fun cancelConnection() {
         disconnect()
-        _connected.value = View.VISIBLE
-        _cancelBtnClick.value = true
+        showLoadingScreen.value = View.VISIBLE
+        cancelBtnClick.value = true
     }
 
     fun connect(hostname: String, port: Int) {
@@ -54,11 +62,11 @@ class CockpitViewModel : ViewModel() {
                 delay(200)
             }
             if(mSocket.connected && !tryConnect.get()) _connected.postValue(View.GONE)*/
-            _connected.postValue(View.GONE)
+            showLoadingScreen.postValue(View.GONE)
             tryConnect.set(false)
             delay(2000)
-            _attitude.postValue(AttitudeIndicator.Attitude(10.0F, 5.0F))
-            _altitude.postValue(200.0)
+            attitude.postValue(AttitudeIndicator.Attitude(10.0F, 5.0F))
+            altitude.postValue(200.0)
         }
     }
 }

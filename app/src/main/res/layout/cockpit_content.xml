@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -32,7 +32,7 @@
                     android:id="@+id/throttleText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
                     android:text="@string/ThrottleText"
                     android:textSize="@dimen/text_size"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -43,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text=""
+                    android:text="@{viewModel.progressString}"
                     android:textSize="@dimen/text_size"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
@@ -61,12 +61,12 @@
 
             <SeekBar
                 android:id="@+id/throttleSeekBar"
+                android:onProgressChanged="@{viewModel::onThrottleChange}"
                 android:layout_width="@dimen/throttle_seek_bar_width"
                 android:layout_height="@dimen/throttle_seek_bar_height"
                 android:max="100"
                 android:progress="1"
                 android:progressDrawable="@drawable/seek_bar"
-
                 android:rotation="0"
                 android:thumb="@drawable/seek_thumb"
                 app:layout_constraintBottom_toBottomOf="parent"
