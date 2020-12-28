@@ -38,5 +38,23 @@
             android:title="@string/ip_title" />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/socket_header">
+
+        <EditTextPreference
+            android:defaultValue="@string/default_bytes"
+            android:key="bytes"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            app:useSimpleSummaryProvider="true"
+            android:title="@string/bytes_title" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_delimiter"
+            android:key="delimiter"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            app:useSimpleSummaryProvider="true"
+            android:title="@string/delimiter_title" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

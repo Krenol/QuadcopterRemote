@@ -86,7 +86,6 @@ class Altimeter @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     override fun onDraw(canvas: Canvas) {
         //super.onDraw(canvas)
         val sc = saveLayer(canvas)
-        //canvas.drawBitmap(mBitmap, 0f, 0f, mBitmapPaint)
         canvas.drawBitmap(drawAltimeter(), 0f, 0f, mBitmapPaint)
         canvas.restoreToCount(sc)
     }
@@ -144,19 +143,7 @@ class Altimeter @JvmOverloads constructor(context: Context, attrs: AttributeSet?
     }
 
     private fun saveLayer(canvas: Canvas): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return canvas.saveLayer(0f, 0f, mWidth.toFloat(), mHeight.toFloat(), null)
-        } else {
-            @Suppress("DEPRECATION")
-            return canvas.saveLayer(
-                0f,
-                0f,
-                mWidth.toFloat(),
-                mHeight.toFloat(),
-                null,
-                Canvas.ALL_SAVE_FLAG
-            )
-        }
+        return canvas.saveLayer(0f, 0f, mWidth.toFloat(), mHeight.toFloat(), null)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

@@ -42,6 +42,18 @@ class Cockpit : Fragment() {
         viewModel.cancelBtnClick.observe(viewLifecycleOwner, { cancel ->
             if(cancel) cancel()
         })
+        viewModel.throttleProgress.observe(viewLifecycleOwner, {
+            viewModel.createEnqueueMessage()
+        })
+        viewModel.yawn.observe(viewLifecycleOwner, {
+            viewModel.createEnqueueMessage()
+        })
+        viewModel.joystickOffset.observe(viewLifecycleOwner, {
+            viewModel.createEnqueueMessage()
+        })
+        viewModel.joystickDegrees.observe(viewLifecycleOwner, {
+            viewModel.createEnqueueMessage()
+        })
         return binding.root
     }
 
@@ -60,10 +72,7 @@ class Cockpit : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        val hostname: String = prefs.getString("hostname", "raspberrypi").toString()
-        val port: Int = prefs.getString("port", "8889").toString().toInt()
-        viewModel.connect(hostname, port)
+        viewModel.connect()
     }
 
     private fun cancel(){

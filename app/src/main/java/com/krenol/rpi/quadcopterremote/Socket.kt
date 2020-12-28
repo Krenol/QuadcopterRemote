@@ -5,10 +5,11 @@ import java.lang.Exception
 import java.net.InetAddress
 
 class Socket {
-    var mSocket = java.net.Socket()
+    private val TAG = "Socket"
+    var socket = java.net.Socket()
         private set
 
-    val connected = mSocket.isConnected && !mSocket.isClosed
+    val connected = socket.isConnected && !socket.isClosed
 
 
 
@@ -19,17 +20,17 @@ class Socket {
 
         try {
             val address = InetAddress.getByName(hostname)
-            mSocket = java.net.Socket(address, port)
+            socket = java.net.Socket(address, port)
 
         }
         catch (e: Exception) {
-            Log.e("Socket", e.toString())
+            Log.e(TAG, e.toString())
         }
         return connected
     }
 
     fun disconnect() {
         if(!connected) return
-        mSocket.close()
+        socket.close()
     }
 }

@@ -13,6 +13,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/bugstick" />
+            <option value="$PROJECT_DIR$/seekarc" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

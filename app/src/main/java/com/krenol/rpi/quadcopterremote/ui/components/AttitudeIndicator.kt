@@ -111,12 +111,7 @@ class AttitudeIndicator @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun saveLayer(canvas: Canvas): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return canvas.saveLayer(0f, 0f, mWidth.toFloat(), mHeight.toFloat(), null)
-        } else {
-            @Suppress("DEPRECATION")
-            return canvas.saveLayer(0f, 0f, mWidth.toFloat(), mHeight.toFloat(), null, Canvas.ALL_SAVE_FLAG)
-        }
+        return canvas.saveLayer(0f, 0f, mWidth.toFloat(), mHeight.toFloat(), null)
     }
 
     private fun getSrc(): Bitmap {

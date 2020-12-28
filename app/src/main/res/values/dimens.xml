@@ -11,4 +11,13 @@
     <dimen name="horizon_size">150dp</dimen>
     <dimen name="horizon_margin_bottom">64dp</dimen>
     <dimen name="altimeter_width">80dp</dimen>
+    <dimen name="arc_size">220dp</dimen>
+    <dimen name="arc_start_angle">210</dimen>
+    <dimen name="arc_sweep_angle">120</dimen>
+    <dimen name="arc_width">5dp</dimen>
+    <dimen name="arc_thumb_radius">10dp</dimen>
+    <dimen name="bugstick_size">180dp</dimen>
+    <dimen name="bugstick_btn_size">60dp</dimen>
+    <dimen name="throttle_x_translation">-60dp</dimen>
+    <dimen name="sixpack_offset">60dp</dimen>
 </resources>

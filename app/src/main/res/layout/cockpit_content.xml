@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -7,36 +7,28 @@
         <import type="android.view.View"/>
         <variable name="viewModel" type="com.krenol.rpi.quadcopterremote.ui.main.CockpitViewModel"/>
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/std_margin"
-
             android:layout_marginBottom="@dimen/std_margin"
-            android:orientation="vertical"
+            android:translationX="@dimen/throttle_x_translation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/throttleText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/ThrottleText"
-                    android:textSize="@dimen/text_size"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toTopOf="@+id/throttleSeekBar"
+                app:layout_constraintEnd_toEndOf="@+id/throttleSeekBar"
+                app:layout_constraintStart_toStartOf="@+id/throttleSeekBar">
 
                 <TextView
                     android:id="@+id/throttleValue"
@@ -61,19 +53,20 @@
 
             <SeekBar
                 android:id="@+id/throttleSeekBar"
-                android:onProgressChanged="@{viewModel::onThrottleChange}"
                 android:layout_width="@dimen/throttle_seek_bar_width"
-                android:layout_height="@dimen/throttle_seek_bar_height"
+                android:layout_height="@dimen/throttle_seek_bar_width"
                 android:max="100"
-                android:progress="1"
+                android:onProgressChanged="@{viewModel::onThrottleChange}"
+                android:progress="0"
                 android:progressDrawable="@drawable/seek_bar"
-                android:rotation="0"
+                android:rotation="270"
                 android:thumb="@drawable/seek_thumb"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
-        <!--
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <com.savantech.seekarc.SeekArc
             android:id="@+id/seekArc"
             android:layout_width="@dimen/arc_size"
@@ -85,13 +78,14 @@
             app:layout_constraintEnd_toEndOf="@+id/joystick"
             app:layout_constraintStart_toStartOf="@+id/joystick"
             app:maxProgress="200"
+            app:onSeekArcChangeListener="@{viewModel.seekArcListener}"
             app:progress="100"
             app:progressColor="@color/bgDrawables"
             app:roundCorner="true"
             app:seekDirection="clockwise"
             app:startAngle="210"
             app:sweepAngle="120"
-            app:thumbColor="@color/colorAccent"
+            app:thumbColor="?colorPrimary"
             app:thumbRadius="@dimen/arc_thumb_radius" />
 
         <com.jmedeisis.bugstick.Joystick
@@ -102,6 +96,7 @@
             android:layout_marginBottom="@dimen/std_margin"
             android:background="@drawable/bg_base"
             app:force_square="true"
+            app:joystickListener="@{viewModel.joystickListener}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -111,15 +106,16 @@
                 android:layout_height="@dimen/bugstick_btn_size"
                 android:background="@drawable/bg_stick" />
 
-        </com.jmedeisis.bugstick.Joystick> -->
+        </com.jmedeisis.bugstick.Joystick>
 
         <com.krenol.rpi.quadcopterremote.ui.components.AttitudeIndicator
             android:id="@+id/attitude_indicator"
             android:layout_width="@dimen/horizon_size"
             android:layout_height="@dimen/horizon_size"
             android:layout_gravity="center"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            android:layout_marginBottom="@dimen/sixpack_offset"
             app:attitude="@{viewModel.attitude}"
+            app:layout_constraintBottom_toTopOf="@+id/seekArc"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:planeColor="@color/planeColor" />
@@ -129,16 +125,17 @@
             android:layout_width="@dimen/altimeter_width"
             android:layout_height="@dimen/horizon_size"
             android:layout_marginStart="@dimen/std_margin"
-            app:altimeterTextSize="10dp"
-            app:indicatorTextSize="12dp"
-            app:altitude="@{viewModel.altitude}"
             app:altimeterBackground="@color/bgDrawables"
-            app:altimeterTextColor="@color/textColor"
             app:altimeterLineColor="@color/textColor"
+            app:altimeterTextColor="@color/textColor"
+            app:altimeterTextSize="10dp"
+            app:altitude="@{viewModel.altitude}"
             app:indicatorColor="?colorPrimary"
+            app:indicatorTextSize="12dp"
             app:layout_constraintBottom_toBottomOf="@+id/attitude_indicator"
             app:layout_constraintStart_toEndOf="@+id/attitude_indicator"
             app:layout_constraintTop_toTopOf="@+id/attitude_indicator" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

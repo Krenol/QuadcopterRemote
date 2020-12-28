@@ -23,6 +23,7 @@
 
     <!-- Preference Titles -->
     <string name="connection_header">Connection</string>
+    <string name="socket_header">Socket</string>
 
     <!-- Connection Type Preference Entries -->
     <string name="connection_title">Connect to Drone via</string>
@@ -40,4 +41,12 @@
     <!-- Port Preference -->
     <string name="port_title">Enter RPi Port</string>
     <string name="default_port">8889</string>
+
+    <!-- Byte Preference -->
+    <string name="bytes_title">Bytes read per message</string>
+    <string name="default_bytes">1024</string>
+
+    <!-- Delimiter Preference -->
+    <string name="delimiter_title">Message delimiter</string>
+    <string name="default_delimiter">\\r\\n</string>
 </resources>
