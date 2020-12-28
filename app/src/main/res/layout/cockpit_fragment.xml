@@ -18,6 +18,9 @@
             android:id="@+id/loading_fragment"
             app:viewModel="@{viewModel}"/>
 
+        <include layout="@layout/cockpit_content"
+            android:id="@+id/cockpit"
+            app:viewModel="@{viewModel}"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

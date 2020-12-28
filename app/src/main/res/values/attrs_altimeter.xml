@@ -1,0 +1,19 @@
+<resources>
+    <declare-styleable name="Altimeter">
+        <attr name="altimeterBackground" format="color" />
+        <attr name="indicatorColor" format="color" />
+        <attr name="indicatorTextColor" format="color" />
+        <attr name="indicatorTextSize" format="dimension" />
+        <attr name="stepSize" format="integer" />
+        <attr name="stepSizeLarge" format="integer" />
+        <attr name="altimeterTextColor" format="color" />
+        <attr name="altimeterTextSize" format="dimension" />
+        <attr name="altimeterLineColor" format="color" />
+    </declare-styleable>
+    <declare-styleable name="AttitudeIndicator">
+        <attr name="earthColor" format="color"/>
+        <attr name="skyColor" format="color"/>
+        <attr name="planeColor" format="color"/>
+        <attr name="attitudeIndicatorColor" format="color"/>
+    </declare-styleable>
+</resources>
