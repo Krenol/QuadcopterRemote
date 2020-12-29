@@ -1,6 +1,5 @@
 package com.krenol.rpi.quadcopterremote.ui.main
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -45,16 +44,16 @@ class Cockpit : Fragment() {
             if(cancel) cancel()
         })
         viewModel.throttleProgress.observe(viewLifecycleOwner, {
-            viewModel.createEnqueueMessage()
+            viewModel.enqueueMessage()
         })
         viewModel.yawn.observe(viewLifecycleOwner, {
-            viewModel.createEnqueueMessage()
+            viewModel.enqueueMessage()
         })
         viewModel.joystickOffset.observe(viewLifecycleOwner, {
-            viewModel.createEnqueueMessage()
+            viewModel.enqueueMessage()
         })
         viewModel.joystickDegrees.observe(viewLifecycleOwner, {
-            viewModel.createEnqueueMessage()
+            viewModel.enqueueMessage()
         })
         return binding.root
     }

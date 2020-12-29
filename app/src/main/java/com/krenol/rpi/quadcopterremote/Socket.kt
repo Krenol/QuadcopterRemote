@@ -20,9 +20,7 @@ class Socket {
         }
 
         try {
-            val address = InetAddress.getByName(hostname)
             socket = java.net.Socket(hostname, port)
-
         }
         catch (e: Exception) {
             Log.e(TAG, e.toString())

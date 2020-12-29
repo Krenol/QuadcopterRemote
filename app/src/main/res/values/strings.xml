@@ -31,20 +31,16 @@
     <string name="ip">IP Address</string>
 
     <!-- Hostname Preference -->
-    <string name="hostname_title">Enter RPi Hostname</string>
+    <string name="hostname_title">RPi Hostname</string>
     <string name="default_hostname">raspberrypi</string>
 
     <!-- IP Preference -->
-    <string name="ip_title">Enter RPi IP</string>
+    <string name="ip_title">RPi IP</string>
     <string name="default_ip">127.0.0.1</string>
 
     <!-- Port Preference -->
-    <string name="port_title">Enter RPi Port</string>
+    <string name="port_title">RPi Port</string>
     <string name="default_port">8889</string>
-
-    <!-- Byte Preference -->
-    <string name="bytes_title">Bytes read per message</string>
-    <string name="default_bytes">512</string>
 
     <!-- Delimiter Preference -->
     <string name="delimiter_title">Message delimiter</string>
