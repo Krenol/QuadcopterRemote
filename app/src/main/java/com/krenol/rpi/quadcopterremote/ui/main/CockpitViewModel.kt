@@ -102,7 +102,12 @@ class CockpitViewModel : ViewModel() {
             )
         )
         val json = mGson.toJson(out)
-        mWriter.submit { send(json.toString()) }
+        try{
+            mWriter.submit { send(json.toString()) }
+        } catch(e: Exception) {
+            Log.e("$TAG-enqueueMessage", e.toString())
+        }
+
     }
 
     fun connect() {
