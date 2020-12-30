@@ -74,6 +74,7 @@ class CockpitViewModel : ViewModel() {
         mWriter.shutdownNow()
         mReader.shutdownNow()
         mSocket.disconnect()
+        Log.i("$TAG-disconnect", "successfully disconnected from RPi")
     }
 
     fun cancelConnection() {
@@ -87,8 +88,7 @@ class CockpitViewModel : ViewModel() {
                 mSocket.socket.getOutputStream().write(("$msg${prefs.delimiter}").toByteArray())
             } catch (e: Exception) {
                 Log.e("$TAG-send", e.toString())
-                mSocket.disconnect()
-                this.connect()
+                onConnectionLost()
             }
         }
     }
@@ -144,6 +144,11 @@ class CockpitViewModel : ViewModel() {
         read()
     }
 
+    private fun onConnectionLost() {
+        mSocket.disconnect()
+        this.connect()
+    }
+
     private fun read(){
         if(mReadFuture == null || mReadFuture!!.isDone) {
             mReader.submit { reader() }
@@ -162,6 +167,8 @@ class CockpitViewModel : ViewModel() {
                 attitude.postValue(AttitudeIndicator.Attitude(-json.angles.pitch, -json.angles.roll))
             } catch(e: Exception) {
                 Log.e("$TAG-read", e.toString())
+                onConnectionLost()
+                break
             }
         }
     }
