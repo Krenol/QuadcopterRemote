@@ -12,9 +12,18 @@ class DataClasses {
 
     }
 
+    data class GPS(
+        var altitude: Double?,
+        var longitude: Double?,
+        var latitude: Double?
+    ) {
+
+    }
+
     data class Output(
             var throttle: Int?,
-            var joystick: Joystick
+            var joystick: Joystick,
+            var gps: GPS
     ) {
     }
 

@@ -55,7 +55,7 @@
                 android:id="@+id/throttleSeekBar"
                 android:layout_width="@dimen/throttle_seek_bar_width"
                 android:layout_height="@dimen/throttle_seek_bar_width"
-                android:max="100"
+                android:max="40"
                 android:onProgressChanged="@{viewModel::onThrottleChange}"
                 android:progress="0"
                 android:progressDrawable="@drawable/seek_bar"

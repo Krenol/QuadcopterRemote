@@ -1,12 +1,19 @@
 package com.krenol.rpi.quadcopterremote.ui.main
 
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.location.Location
+import android.net.wifi.WifiManager.*
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.google.gson.Gson
 import com.krenol.rpi.quadcopterremote.Socket
 import com.krenol.rpi.quadcopterremote.listeners.JoystickListener
@@ -20,48 +27,68 @@ import java.util.concurrent.atomic.AtomicBoolean
 import com.krenol.rpi.quadcopterremote.DataClasses
 import com.krenol.rpi.quadcopterremote.Prefs
 import java.util.*
-import java.util.concurrent.Future
 
 
-class CockpitViewModel : ViewModel() {
+class CockpitViewModel(prefs: Prefs) : ViewModel() {
     private val TAG = "CockpitViewModel"
     private var mSocket: Socket = Socket()
     private var mTryConnect = AtomicBoolean(false)
+    private var mDisconnect = AtomicBoolean(false)
     private var mReadData = AtomicBoolean(false)
     private val mGson = Gson()
-    private val mWriter = Executors.newSingleThreadExecutor()
-    private val mReader = Executors.newSingleThreadExecutor()
-    private var mReadFuture: Future<Any>? = null
-    lateinit var prefs: Prefs
-    
-    var cancelBtnClick = MutableLiveData(false)
+    private var mWriter = Executors.newSingleThreadExecutor()
+    private var mReader = Executors.newSingleThreadExecutor()
+    var prefs: Prefs = prefs
         private set
 
-    var showLoadingScreen = MutableLiveData(View.VISIBLE)
-        private set
-    var showCockpitScreen = MutableLiveData(View.GONE)
-        private set
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            location.value = locationResult!!.lastLocation
+            Log.i("test", location.value.toString())
+        }
+    }
 
-    var altitude = MutableLiveData(0.0)
-        private set
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val action: String? = intent.action
+            val state: Int = intent.getIntExtra(
+                EXTRA_WIFI_STATE,
+                WIFI_STATE_DISABLED
+            )
+            if (action == WIFI_STATE_CHANGED_ACTION && state == WIFI_STATE_DISABLED) {
+                onConnectionLost()
+            } else if (action == WIFI_STATE_CHANGED_ACTION) {
+                //TODO
+            }
+        }
+    }
 
-    var attitude = MutableLiveData(AttitudeIndicator.Attitude(0.0F, 0.0F))
-        private set
+    val location = MutableLiveData<Location>()
 
-    var progressString = MutableLiveData("0")
-        private set
+    val cancelBtnClick = MutableLiveData(false)
 
-    var throttleProgress = MutableLiveData(0)
-        private set
+    val showLoadingScreen = MutableLiveData(View.VISIBLE)
+
+    val showCockpitScreen = MutableLiveData(View.GONE)
+
+    val altitude = MutableLiveData(0.0)
+
+    val attitude = MutableLiveData(AttitudeIndicator.Attitude(0.0F, 0.0F))
+
+    val progressString = MutableLiveData("0")
+
+    val throttleProgress = MutableLiveData(0)
+
     var yawn = MutableLiveData(0)
-        private set
-    var joystickDegrees = MutableLiveData(0.0F)
-        private set
-    var joystickOffset = MutableLiveData(0.0F)
-        private set
+
+    val joystickDegrees = MutableLiveData(0.0F)
+
+    val joystickOffset = MutableLiveData(0.0F)
 
     val seekArcListener = MutableLiveData(SeekArcListener(yawn))
     val joystickListener = MutableLiveData(JoystickListener(joystickDegrees, joystickOffset))
+
+
 
     fun onThrottleChange(seekBar: SeekBar?, progressValue: Int, fromUser: Boolean) {
         throttleProgress.value = progressValue
@@ -69,6 +96,8 @@ class CockpitViewModel : ViewModel() {
     }
 
     fun disconnect() {
+        Log.i("$TAG-disconnect", "disconnecting from RPi")
+        mDisconnect.set(true)
         mTryConnect.set(false)
         mReadData.set(false)
         mWriter.shutdownNow()
@@ -95,10 +124,16 @@ class CockpitViewModel : ViewModel() {
 
     fun enqueueMessage() {
         val out = DataClasses.Output(
-            throttleProgress.value, DataClasses.Joystick(
+            throttleProgress.value,
+            DataClasses.Joystick(
                 joystickOffset.value,
                 joystickDegrees.value,
                 yawn.value
+            ),
+            DataClasses.GPS(
+                location.value?.altitude,
+                location.value?.latitude,
+                location.value?.longitude
             )
         )
         val json = mGson.toJson(out)
@@ -112,6 +147,7 @@ class CockpitViewModel : ViewModel() {
 
     fun connect() {
         if(mTryConnect.get()) return
+        mDisconnect.set(false)
         prepareSocketConnection()
         viewModelScope.launch(Dispatchers.IO) {
             mTryConnect.set(true)
@@ -143,6 +179,12 @@ class CockpitViewModel : ViewModel() {
 
     private fun onSocketConnection(){
         Log.i("$TAG-onConnection", "connected successfully to RPi")
+        if(mWriter.isShutdown || mWriter.isTerminated) {
+            mWriter = Executors.newSingleThreadExecutor()
+        }
+        if(mReader.isShutdown || mReader.isTerminated) {
+            mReader = Executors.newSingleThreadExecutor()
+        }
         showLoadingScreen.postValue(View.GONE)
         showCockpitScreen.postValue(View.VISIBLE)
         mReadData.set(true)
@@ -151,11 +193,13 @@ class CockpitViewModel : ViewModel() {
 
     private fun onConnectionLost() {
         mSocket.disconnect()
-        this.connect()
+        if(!mDisconnect.get()) {
+            this.connect()
+        }
     }
 
     private fun read(){
-        if(mReadFuture == null || mReadFuture!!.isDone) {
+        if(!mReader.isShutdown) {
             mReader.submit { reader() }
         }
     }
