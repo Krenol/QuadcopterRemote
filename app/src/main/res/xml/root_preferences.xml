@@ -7,7 +7,7 @@
             android:defaultValue="1"
             android:entries="@array/connection_type"
             android:entryValues="@array/connection_values"
-            android:key="connection_type"
+            android:key="socket_type"
             android:title="@string/connection_title"
             app:useSimpleSummaryProvider="true" />
 
@@ -21,32 +21,22 @@
             android:title="@string/port_title" />
 
         <EditTextPreference
-            android:defaultValue="@string/default_hostname"
+            android:defaultValue="@string/default_host"
             android:key="hostname"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             app:useSimpleSummaryProvider="true"
-            android:title="@string/hostname_title" />
+            android:title="@string/host_title" />
 
         <EditTextPreference
-            android:defaultValue="@string/default_ip"
-            android:key="ip"
+            android:defaultValue="@string/default_context"
+            android:key="context"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:digits="0123456789."
             app:useSimpleSummaryProvider="true"
-            android:title="@string/ip_title" />
+            android:title="@string/context" />
 
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/socket_header">
-
-        <EditTextPreference
-            android:defaultValue="@string/default_delimiter"
-            android:key="delimiter"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            app:useSimpleSummaryProvider="true"
-            android:title="@string/delimiter_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>

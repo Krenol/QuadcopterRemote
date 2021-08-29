@@ -1,7 +1,7 @@
 <resources>
     <string-array name="connection_type">
-        <item>@string/hostname</item>
-        <item>@string/ip</item>
+        <item>@string/ws</item>
+        <item>@string/wss</item>
     </string-array>
     <string-array name="connection_values">
         <item>1</item>

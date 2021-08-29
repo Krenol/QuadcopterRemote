@@ -27,23 +27,19 @@
     <string name="socket_header">Socket</string>
 
     <!-- Connection Type Preference Entries -->
-    <string name="connection_title">Connect to Drone via</string>
-    <string name="hostname">Hostname</string>
-    <string name="ip">IP Address</string>
+    <string name="connection_title">Connect to Drone with</string>
+    <string name="ws">ws</string>
+    <string name="wss">wss</string>
 
     <!-- Hostname Preference -->
-    <string name="hostname_title">RPi Hostname</string>
-    <string name="default_hostname">raspberrypi</string>
+    <string name="host_title">Host</string>
+    <string name="default_host">demo.piesocket.com</string>
 
     <!-- IP Preference -->
-    <string name="ip_title">RPi IP</string>
-    <string name="default_ip">127.0.0.1</string>
+    <string name="context">Context</string>
+    <string name="default_context">/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&amp;notify_self</string>
 
     <!-- Port Preference -->
     <string name="port_title">RPi Port</string>
-    <string name="default_port">8889</string>
-
-    <!-- Delimiter Preference -->
-    <string name="delimiter_title">Message delimiter</string>
-    <string name="default_delimiter">\\r\\n</string>
+    <string name="default_port">443</string>
 </resources>

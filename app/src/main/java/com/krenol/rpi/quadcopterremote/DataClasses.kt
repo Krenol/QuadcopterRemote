@@ -27,6 +27,22 @@ class DataClasses {
     ) {
     }
 
+    data class Dummy(
+        @SerializedName("gps") val gps: DummyGPS,
+        @SerializedName("joystick") val joystick: DummyJoy,
+        @SerializedName("throttle") val throttle: Double
+    )
+    data class DummyGPS(
+        @SerializedName("altitude") val altitude: Double?,
+        @SerializedName("longitude") val longitude: Double?,
+        @SerializedName("latitude") val latitude: Double?
+    )
+    data class DummyJoy(
+        @SerializedName("offset") val offset: Double?,
+        @SerializedName("degrees") val degrees: Double?,
+        @SerializedName("rotation") val rotation: Double?
+    )
+
     data class Input(
             @SerializedName("angles") val angles: Angles,
             @SerializedName("position") val position: Position,

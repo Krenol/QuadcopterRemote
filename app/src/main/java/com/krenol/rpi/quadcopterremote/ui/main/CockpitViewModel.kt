@@ -15,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.gson.Gson
-import com.krenol.rpi.quadcopterremote.Socket
 import com.krenol.rpi.quadcopterremote.listeners.JoystickListener
 import com.krenol.rpi.quadcopterremote.listeners.SeekArcListener
 import com.krenol.rpi.quadcopterremote.ui.components.AttitudeIndicator
@@ -26,18 +25,18 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import com.krenol.rpi.quadcopterremote.DataClasses
 import com.krenol.rpi.quadcopterremote.Prefs
+import com.krenol.rpi.quadcopterremote.Websocket
+import java.net.URI
 import java.util.*
 
 
 class CockpitViewModel(prefs: Prefs) : ViewModel() {
     private val TAG = "CockpitViewModel"
-    private var mSocket: Socket = Socket()
+    private lateinit var mWsSocket: Websocket
     private var mTryConnect = AtomicBoolean(false)
     private var mDisconnect = AtomicBoolean(false)
-    private var mReadData = AtomicBoolean(false)
     private val mGson = Gson()
     private var mWriter = Executors.newSingleThreadExecutor()
-    private var mReader = Executors.newSingleThreadExecutor()
     var prefs: Prefs = prefs
         private set
 
@@ -99,10 +98,8 @@ class CockpitViewModel(prefs: Prefs) : ViewModel() {
         Log.i("$TAG-disconnect", "disconnecting from RPi")
         mDisconnect.set(true)
         mTryConnect.set(false)
-        mReadData.set(false)
         mWriter.shutdownNow()
-        mReader.shutdownNow()
-        mSocket.disconnect()
+        mWsSocket.close()
         Log.i("$TAG-disconnect", "successfully disconnected from RPi")
     }
 
@@ -112,13 +109,10 @@ class CockpitViewModel(prefs: Prefs) : ViewModel() {
     }
 
     private fun send(msg: String) {
-        if(mSocket.isConnected()){
-            try {
-                mSocket.socket.getOutputStream().write(("$msg${prefs.delimiter}").toByteArray())
-            } catch (e: Exception) {
-                Log.e("$TAG-send", e.toString())
-                onConnectionLost()
-            }
+        if(mWsSocket.connected.get()) {
+            mWsSocket.send(msg)
+        } else {
+            onConnectionLost()
         }
     }
 
@@ -151,30 +145,28 @@ class CockpitViewModel(prefs: Prefs) : ViewModel() {
         prepareSocketConnection()
         viewModelScope.launch(Dispatchers.IO) {
             mTryConnect.set(true)
-            while(mTryConnect.get() && !mSocket.isConnected()){
-                socketConnector()
+            val fullUrl = (if(prefs.wsSocket)  "ws" else  "wss") + "://${prefs.hostname}" +
+                    (if(prefs.port.isBlank()) "" else ":${prefs.port}") +
+                    (if(prefs.context.startsWith("/")) prefs.context else "/${prefs.context}")
+            val url = URI(fullUrl)
+            Log.i("$TAG-socketConnector", "Connect to $fullUrl")
+            do {
+                mWsSocket = Websocket(url, ::onMessageCb)
+                if(!prefs.wsSocket) {
+                    mWsSocket.useSSLFactory()
+                }
+                mWsSocket.connect()
                 delay(500)
-            }
-            if(mSocket.isConnected() && mTryConnect.get()) {
+            } while(mTryConnect.get() && !mWsSocket.connected.get())
+            if(mWsSocket.connected.get() && mTryConnect.get()) {
                 onSocketConnection()
             }
             mTryConnect.set(false)
         }
     }
     private fun prepareSocketConnection() {
-        mReadData.set(false)
         showLoadingScreen.postValue(View.VISIBLE)
         showCockpitScreen.postValue(View.GONE)
-    }
-
-    private fun socketConnector(){
-        if(prefs.useHostname){
-            Log.i("$TAG-socketConnector", "Connect via hostname")
-            mSocket.connectToHost(prefs.hostname, prefs.port)
-        } else {
-            Log.i("$TAG-socketConnector", "Connect via IP")
-            mSocket.connectToIp(prefs.ip, prefs.port)
-        }
     }
 
     private fun onSocketConnection(){
@@ -182,43 +174,21 @@ class CockpitViewModel(prefs: Prefs) : ViewModel() {
         if(mWriter.isShutdown || mWriter.isTerminated) {
             mWriter = Executors.newSingleThreadExecutor()
         }
-        if(mReader.isShutdown || mReader.isTerminated) {
-            mReader = Executors.newSingleThreadExecutor()
-        }
         showLoadingScreen.postValue(View.GONE)
         showCockpitScreen.postValue(View.VISIBLE)
-        mReadData.set(true)
-        read()
     }
 
     private fun onConnectionLost() {
-        mSocket.disconnect()
+        mWsSocket.close()
         if(!mDisconnect.get()) {
             this.connect()
         }
     }
 
-    private fun read(){
-        if(!mReader.isShutdown) {
-            mReader.submit { reader() }
-        }
-    }
-
-    private fun reader(){
-        val scanner = Scanner(mSocket.socket.getInputStream())
-        scanner.useDelimiter(prefs.delimiter)
-        var msg: String
-        while(mReadData.get() && mSocket.isConnected()){
-            try{
-                msg = scanner.nextLine()
-                val json = mGson.fromJson(msg, DataClasses.Input::class.java)
-                altitude.postValue(json.sensors.barometric_height)
-                attitude.postValue(AttitudeIndicator.Attitude(-json.angles.pitch, -json.angles.roll))
-            } catch(e: Exception) {
-                Log.e("$TAG-read", e.toString())
-                onConnectionLost()
-                break
-            }
-        }
+    private fun onMessageCb(msg: String?) {
+        val json = mGson.fromJson(msg, DataClasses.Dummy::class.java)
+        altitude.postValue(json.throttle)
+        //altitude.postValue(json.sensors.barometric_height)
+        //attitude.postValue(AttitudeIndicator.Attitude(-json.angles.pitch, -json.angles.roll))
     }
 }
