@@ -28,6 +28,7 @@ import com.krenol.rpi.quadcopterremote.Prefs
 import com.krenol.rpi.quadcopterremote.Websocket
 import java.net.URI
 import java.util.*
+import kotlin.math.PI
 
 
 class CockpitViewModel(prefs: Prefs) : ViewModel() {
@@ -186,9 +187,10 @@ class CockpitViewModel(prefs: Prefs) : ViewModel() {
     }
 
     private fun onMessageCb(msg: String?) {
-        val json = mGson.fromJson(msg, DataClasses.Dummy::class.java)
-        altitude.postValue(json.throttle)
-        //altitude.postValue(json.sensors.barometric_height)
-        //attitude.postValue(AttitudeIndicator.Attitude(-json.angles.pitch, -json.angles.roll))
+        val json = mGson.fromJson(msg, DataClasses.Input::class.java)
+        altitude.postValue(json.sensors.barometric_height)
+        val pitch = -json.angles.isValues.pitch * 180 / PI
+        val roll = -json.angles.isValues.roll * 180 / PI
+        attitude.postValue(AttitudeIndicator.Attitude(pitch.toFloat(), roll.toFloat()))
     }
 }

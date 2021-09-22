@@ -50,6 +50,11 @@ class DataClasses {
     )
 
     data class Angles(
+        @SerializedName("is") val isValues: AnglesObject,
+        @SerializedName("should") val shouldValues: AnglesObject
+    )
+
+    data class AnglesObject(
             @SerializedName("roll") val roll: Float,
             @SerializedName("pitch") val pitch: Float,
             @SerializedName("yaw") val yaw: Float
